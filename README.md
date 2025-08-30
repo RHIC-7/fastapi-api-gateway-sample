@@ -57,7 +57,7 @@ uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ### イメージビルド
 
 ```bash
-docker build -t fastapi-sample .
+docker build -f ./aws/Dockerfile -t fastapi-sample .
 ```
 
 ### ローカル起動
@@ -100,6 +100,7 @@ docker push <your_account_id>.dkr.ecr.<region>.amazonaws.com/fastapi-sample:late
 
 | 変数名                 | デフォルト    | 説明                         |
 | ------------------- | -------- | -------------------------- |
+| `API_GATEWAY_RESOURCE`  | `api` | API Gateway リソース名             |
 | `API_GATEWAY_STAGE` | `dev`    | API Gateway ステージ名          |
 | `APPLICATION_ROOT`  | `sample` | アプリケーションのルートパス             |
 | `PORT`              | `8000`   | Web Adapter が listen するポート |
