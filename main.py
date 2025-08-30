@@ -1,23 +1,40 @@
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
+
+API_GATEWAY_STAGE = "dev"
+APPLICATION_ROOT = "sample"
+ROOT_PASS = f"/{API_GATEWAY_STAGE}/{APPLICATION_ROOT}"
 
 # FastAPI アプリケーションの初期化
 app = FastAPI(
-    docs_url="/sample/docs",  # ドキュメントのURLを変更
-    openapi_url="/sample/openapi.json"
+    docs_url=f"{ROOT_PASS}/docs",
+    openapi_url=f"{ROOT_PASS}/openapi.json"
 )
 
+router = APIRouter(prefix=ROOT_PASS)
 
-@app.get("/")
+
+@router.get("/")
 def read_root():
-    """
-    ルートエンドポイントの定義
-    """
-    return {"message": "Hello FastAPI!"}
+    """ルートエンドポイント"""
+    return {"message": "Hello FastAPI!", "basePath": ROOT_PASS}
 
 
-@app.get("/items/{item_id}")
+@router.get("/items/{item_id}")
 def read_item(item_id: int, q: str | None = None):
-    """
-    アイテムエンドポイントの定義
-    """
+    """アイテムエンドポイント"""
     return {"item_id": item_id, "query": q}
+
+
+# ヘルスチェック
+@router.get("/healthz")
+def health():
+    return {"status": "ok"}
+
+
+app.include_router(router)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # Lambda Web Adapter でもローカル実行でも動くように 0.0.0.0:8000 で公開
+    uvicorn.run(app, host="0.0.0.0", port=8000)
